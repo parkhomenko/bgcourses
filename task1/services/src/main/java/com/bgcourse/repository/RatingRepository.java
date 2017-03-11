@@ -58,6 +58,17 @@ public class RatingRepository {
     }
   }
 
+  public void addBatchOfUpdatingRecords(MovieRating movieRating) {
+    BoundStatement boundStatement = new BoundStatement(preparedStatement);
+    boundStatement.bind(uuidGenerator.getPredefinedUUID(), movieRating.getDistribution(), movieRating.getVotes(),
+        movieRating.getRank(), movieRating.getTitle());
+    batchStatement.add(boundStatement);
+    if (batchStatement.size() == 100) {
+      session.execute(batchStatement);
+      batchStatement.clear();
+    }
+  }
+
   public List<MovieRating> getRatings(String prefix) {
     String query = "select * from imdb.ratings where expr(ratings_index, "
         + "'{filter: {type: \"prefix\", field: \"title\", value: \"" + prefix + "\"}}')";

@@ -44,6 +44,15 @@ public class MovieRatingService {
     }
   }
 
+  public void addBanchOfRecordsWithPredefinedPrimaryKeys() {
+    for (int i = 0; i < NUMBER_OF_PACKS; i++) {
+      System.out.print(i + ": [");
+      fileParser.collect(ratingRepository::addBatchOfUpdatingRecords);
+      ratingRepository.executeBatch();
+      System.out.println("]");
+    }
+  }
+
   public void addRecord(MovieRating movieRating) {
     ratingRepository.add(movieRating);
   }
