@@ -17,14 +17,14 @@ ENV JAVA_HOME /usr/lib/jvm/java-8-oracle
 RUN apt-get update && \
     apt-get install -y vim && \
     apt-get install -y wget && \
-    apt-get install -y openssh-server openssh-client rsync && \
+    apt-get install -y ssh && \
     rm -rf /var/lib/apt/lists/*
 
 # passwordless ssh
-RUN echo "yes \n" | ssh-keygen -q -N "" -t dsa -f /etc/ssh/ssh_host_dsa_key
-RUN echo "yes \n" | ssh-keygen -q -N "" -t rsa -f /etc/ssh/ssh_host_rsa_key
-RUN echo "yes \n" | ssh-keygen -q -N "" -t rsa -f /root/.ssh/id_rsa
-RUN cp /root/.ssh/id_rsa.pub /root/.ssh/authorized_keys
+RUN ssh-keygen -t rsa -P '' -f ~/.ssh/id_rsa && \
+    cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys && \
+    cat ~/.ssh/id_rsa.pub >> ~/.ssh/known_hosts && \
+    chmod 0600 ~/.ssh/authorized_keys
 
 # hadoop installation
 RUN wget http://mirrors.ae-online.de/apache/hadoop/common/hadoop-2.7.3/hadoop-2.7.3.tar.gz && \
@@ -34,12 +34,21 @@ RUN wget http://mirrors.ae-online.de/apache/hadoop/common/hadoop-2.7.3/hadoop-2.
 
 COPY ./core-site.xml /usr/local/hadoop/etc/hadoop/core-site.xml
 COPY ./hdfs-site.xml /usr/local/hadoop/etc/hadoop/hdfs-site.xml
+COPY ./hadoop-env.sh /usr/local/hadoop/etc/hadoop/hadoop-env.sh
 
-ADD ssh_config /root/.ssh/config
-RUN chmod 600 /root/.ssh/config
-RUN chown root:root /root/.ssh/config
+RUN echo "StrictHostKeyChecking no" >> /etc/ssh/ssh_config && \
+    echo "UserKnownHostsFile=/dev/null" >> /etc/ssh/ssh_config && \
+    echo "ssh:localhost:allow" >> /etc/hosts.allow && \
+    echo "sshd:localhost:allow" >> /etc/hosts.allow
 
-COPY ./docker-entrypoint.sh /docker-entrypoint.sh
-CMD ["/docker-entrypoint.sh", "-d"]
+RUN service ssh restart
+RUN ssh localhost
+
+RUN /usr/local/hadoop/bin/hadoop namenode -format && \
+    /usr/local/hadoop/sbin/start-dfs.sh
+
+#COPY ./docker-entrypoint.sh /docker-entrypoint.sh
+#CMD ["/docker-entrypoint.sh", "-d"]
 
 EXPOSE 50070
+CMD ["/bin/bash"]
