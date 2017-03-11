@@ -2,11 +2,6 @@
 
 set -e
 
-#if [ "$1" = 'cassandra' ]; then
-#  chown -R cassandra /var/lib/cassandra /var/log/cassandra /etc/cassandra
-#  exec gosu cassandra "$@"
-#fi
-
 CASSANDRA_LISTEN_ADDRESS="$(hostname --ip-address)"
 CASSANDRA_BROADCAST_ADDRESS="$(hostname --ip-address)"
 CASSANDRA_BROADCAST_RPC_ADDRESS="$(hostname --ip-address)"
