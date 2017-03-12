@@ -12,18 +12,16 @@ RUN apt-get update && \
     apt-get install oracle-java8-set-default && \
     rm -rf /var/lib/apt/lists/*
 
-ENV JAVA_HOME /usr/lib/jvm/java-8-oracle
-
 RUN apt-get update && \
     apt-get install -y vim && \
     apt-get install -y wget && \
     apt-get install -y ssh && \
+    apt-get install -y lsof && \
     rm -rf /var/lib/apt/lists/*
 
 # passwordless ssh
 RUN ssh-keygen -t rsa -P '' -f ~/.ssh/id_rsa && \
     cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys && \
-    cat ~/.ssh/id_rsa.pub >> ~/.ssh/known_hosts && \
     chmod 0600 ~/.ssh/authorized_keys
 
 # hadoop installation
@@ -34,21 +32,15 @@ RUN wget http://mirrors.ae-online.de/apache/hadoop/common/hadoop-2.7.3/hadoop-2.
 
 COPY ./core-site.xml /usr/local/hadoop/etc/hadoop/core-site.xml
 COPY ./hdfs-site.xml /usr/local/hadoop/etc/hadoop/hdfs-site.xml
-COPY ./hadoop-env.sh /usr/local/hadoop/etc/hadoop/hadoop-env.sh
+
+RUN sed -i "/export[ ]JAVA_HOME=/ s/=.*/=\/usr\/lib\/jvm\/java-8-oracle/" /usr/local/hadoop/etc/hadoop/hadoop-env.sh
 
 RUN echo "StrictHostKeyChecking no" >> /etc/ssh/ssh_config && \
-    echo "UserKnownHostsFile=/dev/null" >> /etc/ssh/ssh_config && \
-    echo "ssh:localhost:allow" >> /etc/hosts.allow && \
-    echo "sshd:localhost:allow" >> /etc/hosts.allow
+    echo "UserKnownHostsFile=/dev/null" >> /etc/ssh/ssh_config
 
-RUN service ssh restart
-RUN ssh localhost
+RUN /usr/local/hadoop/bin/hadoop namenode -format
 
-RUN /usr/local/hadoop/bin/hadoop namenode -format && \
-    /usr/local/hadoop/sbin/start-dfs.sh
-
-#COPY ./docker-entrypoint.sh /docker-entrypoint.sh
-#CMD ["/docker-entrypoint.sh", "-d"]
+COPY ./docker-entrypoint.sh /docker-entrypoint.sh
+CMD ["/docker-entrypoint.sh", "-d"]
 
 EXPOSE 50070
-CMD ["/bin/bash"]
