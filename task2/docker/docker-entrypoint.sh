@@ -1,12 +1,36 @@
 #!/bin/bash
 
+set -e
+
 service ssh restart
-/usr/local/hadoop/sbin/start-dfs.sh
 
-if [[ $1 == "-d" ]]; then
-  while true; do sleep 1000; done
+is_master=true
+for (( i=1; i<=${#}; i++));
+do
+  if [ "${!i}" == "-master" ]
+  then
+    is_master=false
+    master_index=$(( $i + 1 ))
+    master_host="hdfs://master:9000"
+    xmlstarlet ed --inplace -u "/configuration/property/value[../name/text()='fs.defaultFS']" -v ${master_host} /usr/local/hadoop/etc/hadoop/core-site.xml
+    echo ${!master_index} "master" >> /etc/hosts
+    break
+  fi
+
+  if [ "${!i}" == "-slave" ]
+  then
+    slave_index=$(( $i + 1 ))
+    slave_host=${!slave_index}
+    echo "slave" >> /usr/local/hadoop/etc/hadoop/slaves
+    echo $slave_host "slave" >> /etc/hosts
+  fi
+done
+
+if [ $is_master = true ]
+then
+  master_host="hdfs://$(hostname):9000"
+  xmlstarlet ed --inplace -u "/configuration/property/value[../name/text()='fs.defaultFS']" -v ${master_host} /usr/local/hadoop/etc/hadoop/core-site.xml
+  /usr/local/hadoop/sbin/start-dfs.sh
 fi
 
-if [[ $1 == "-bash" ]]; then
-  /bin/bash
-fi
+while true; do sleep 1000; done

@@ -16,6 +16,7 @@ RUN apt-get update && \
     apt-get install -y vim && \
     apt-get install -y wget && \
     apt-get install -y ssh && \
+    apt-get install -y xmlstarlet && \
     apt-get install -y lsof && \
     rm -rf /var/lib/apt/lists/*
 
@@ -41,6 +42,6 @@ RUN echo "StrictHostKeyChecking no" >> /etc/ssh/ssh_config && \
 RUN /usr/local/hadoop/bin/hadoop namenode -format
 
 COPY ./docker-entrypoint.sh /docker-entrypoint.sh
-CMD ["/docker-entrypoint.sh", "-d"]
+ENTRYPOINT ["/docker-entrypoint.sh"]
 
-EXPOSE 50070
+EXPOSE 50010 50020 50070 50075 50090
