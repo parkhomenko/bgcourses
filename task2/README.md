@@ -29,7 +29,7 @@ Build into one jar:<br/>
 gradle fatJar
 
 Usage:<br/>
-java -jar *path to uber jar* *option* **local** **remote**
+java -jar *path-to-uber-jar* *option* **local-file** **remote-file**
 
 Examples:<br/>
 java -jar ./services/build/libs/hdfs_util-1.0-SNAPSHOT.jar -write ./files/ratings.list /user/hadoop/ratings/ratings.list<br/>
