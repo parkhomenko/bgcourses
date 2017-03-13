@@ -1,0 +1,62 @@
+version: '3'
+
+
+services:
+  
+  hdfs-master:
+    image: hdfs
+    container_name: hdfs-master
+    ports:
+     - "50070:50070"
+    volumes:
+     - ./files:/usr/local/files
+    command: -slave slave-first -slave slave-second -slave slave-third
+    networks:
+      hdfs-cluster:
+        ipv4_address: 173.22.0.2
+    extra_hosts:
+     - "slave-first:173.22.0.3"
+     - "slave-second:173.22.0.4"
+     - "slave-third:173.22.0.5"
+    depends_on:
+     - hdfs-slave-first
+     - hdfs-slave-second
+     - hdfs-slave-third
+  
+  hdfs-slave-first:
+    image: hdfs
+    container_name: hdfs-slave-first
+    command: -master master
+    networks:
+      hdfs-cluster:
+        ipv4_address: 173.22.0.3
+    extra_hosts:
+     - "master:173.22.0.2"
+
+  hdfs-slave-second:
+    image: hdfs
+    container_name: hdfs-slave-second
+    command: -master master
+    networks:
+      hdfs-cluster:
+        ipv4_address: 173.22.0.4
+    extra_hosts:
+     - "master:173.22.0.2"
+
+  hdfs-slave-third:
+    image: hdfs
+    container_name: hdfs-slave-third
+    command: -master master
+    networks:
+      hdfs-cluster:
+        ipv4_address: 173.22.0.5
+    extra_hosts:
+     - "master:173.22.0.2"
+
+
+networks:
+  hdfs-cluster:
+    driver: bridge
+    ipam:
+      config:
+       - subnet: 173.22.0.0/16

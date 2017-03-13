@@ -13,7 +13,6 @@ do
     master_index=$(( $i + 1 ))
     master_host="hdfs://master:9000"
     xmlstarlet ed --inplace -u "/configuration/property/value[../name/text()='fs.defaultFS']" -v ${master_host} /usr/local/hadoop/etc/hadoop/core-site.xml
-    echo ${!master_index} "master" >> /etc/hosts
     break
   fi
 
@@ -21,8 +20,7 @@ do
   then
     slave_index=$(( $i + 1 ))
     slave_host=${!slave_index}
-    echo "slave" >> /usr/local/hadoop/etc/hadoop/slaves
-    echo $slave_host "slave" >> /etc/hosts
+    echo $slave_host >> /usr/local/hadoop/etc/hadoop/slaves
   fi
 done
 
