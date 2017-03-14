@@ -13,6 +13,9 @@ public class StoreWritable implements WritableComparable<StoreWritable> {
 
   private Store store;
 
+  public StoreWritable() {
+  }
+
   public StoreWritable(Store store) {
     this.store = store;
   }
@@ -38,5 +41,24 @@ public class StoreWritable implements WritableComparable<StoreWritable> {
   public String toString() {
     Gson gson = new Gson();
     return gson.toJson(store);
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+
+    StoreWritable that = (StoreWritable) o;
+
+    return store != null ? store.equals(that.store) : that.store == null;
+  }
+
+  @Override
+  public int hashCode() {
+    return store != null ? store.hashCode() : 0;
   }
 }
