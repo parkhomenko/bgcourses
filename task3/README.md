@@ -1,4 +1,4 @@
-#Starting a cluster
+# Starting a cluster
 
 Start:
 docker build -t hdfs ./docker
@@ -7,7 +7,7 @@ docker-compose up -d
 Stop:
 docker-compose down --volumes
 
-#Map-reduce job
+# Map-reduce job
 
 Build into one jar:<br/>
 gradle uberJar
