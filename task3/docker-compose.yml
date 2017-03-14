@@ -1,0 +1,65 @@
+version: '3'
+
+
+services:
+  
+  yarn-master:
+    image: yarn
+    container_name: yarn-master
+    ports:
+     - "50070:50070"
+     - "50075:50075"
+     - "9000:9000"
+     - "8088:8088"
+    volumes:
+     - ./files:/usr/local/files
+    command: -slave slave-first -slave slave-second -slave slave-third
+    networks:
+      yarn-cluster:
+        ipv4_address: 172.23.0.2
+    extra_hosts:
+     - "slave-first:172.23.0.3"
+     - "slave-second:172.23.0.4"
+     - "slave-third:172.23.0.5"
+    depends_on:
+     - yarn-slave-first
+     - yarn-slave-second
+     - yarn-slave-third
+  
+  yarn-slave-first:
+    image: yarn
+    container_name: yarn-slave-first
+    command: -master master
+    networks:
+      yarn-cluster:
+        ipv4_address: 172.23.0.3
+    extra_hosts:
+     - "master:172.23.0.2"
+
+  yarn-slave-second:
+    image: yarn
+    container_name: yarn-slave-second
+    command: -master master
+    networks:
+      yarn-cluster:
+        ipv4_address: 172.23.0.4
+    extra_hosts:
+     - "master:172.23.0.2"
+
+  yarn-slave-third:
+    image: yarn
+    container_name: yarn-slave-third
+    command: -master master
+    networks:
+      yarn-cluster:
+        ipv4_address: 172.23.0.5
+    extra_hosts:
+     - "master:172.23.0.2"
+
+
+networks:
+  yarn-cluster:
+    driver: bridge
+    ipam:
+      config:
+       - subnet: 172.23.0.0/16
