@@ -1,7 +1,7 @@
 # Starting a cluster
 
 Start:<br/>
-docker build -t hdfs ./docker<br/>
+docker build -t yarn ./docker<br/>
 docker-compose up -d
 
 Stop:<br/>
