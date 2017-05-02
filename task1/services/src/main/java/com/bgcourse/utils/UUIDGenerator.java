@@ -34,4 +34,14 @@ public class UUIDGenerator {
     int index = new Random().nextInt(5);
     return uuids.get(index).toString();
   }
+
+  public String getRandomString() {
+    Random random = new Random();
+    StringBuilder builder = new StringBuilder();
+    for (int i = 0; i < 1024; i++) {
+      char symbol = (char) random.nextInt(256);
+      builder.append(symbol);
+    }
+    return builder.toString();
+  }
 }

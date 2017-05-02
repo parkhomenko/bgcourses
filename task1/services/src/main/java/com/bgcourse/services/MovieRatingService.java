@@ -14,7 +14,7 @@ import javax.annotation.PostConstruct;
 @Service
 public class MovieRatingService {
 
-  public static final int NUMBER_OF_PACKS = 200;
+  public static final int NUMBER_OF_PACKS = 1;
 
   @Autowired
   FileParser fileParser;
@@ -33,6 +33,14 @@ public class MovieRatingService {
 
   public List<MovieRating> getRatingsByTitle(String title) {
     return ratingRepository.getRatingsByTitle(title);
+  }
+
+  public void addRecords() {
+    for (int i = 0; i < NUMBER_OF_PACKS; i++) {
+      System.out.print(i + ": [");
+      fileParser.collect(ratingRepository::addWithDummyDescription);
+      System.out.println("]");
+    }
   }
 
   public void addBanchOfRecords() {

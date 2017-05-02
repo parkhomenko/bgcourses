@@ -47,6 +47,13 @@ public class RatingRepository {
         movieRating.getRank(), movieRating.getTitle());
   }
 
+  public void addWithDummyDescription(MovieRating movieRating) {
+    Session session = cassandraConnector.getSession();
+    String query = "insert into imdb.ratings(id, distribution, votes, rank, title) values(?, ?, ?, ?, ?)";
+    session.execute(query, uuidGenerator.getUUID(), uuidGenerator.getRandomString(), movieRating.getVotes(),
+        movieRating.getRank(), movieRating.getTitle());
+  }
+
   public void addBatch(MovieRating movieRating) {
     BoundStatement boundStatement = new BoundStatement(preparedStatement);
     boundStatement.bind(uuidGenerator.getUUID(), movieRating.getDistribution(), movieRating.getVotes(),

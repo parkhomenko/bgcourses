@@ -26,11 +26,12 @@ RUN \
 
 RUN echo 'deb http://www.apache.org/dist/cassandra/debian 30x main' >> /etc/apt/sources.list.d/cassandra.list
 
-ENV CASSANDRA_VERSION 3.0.11
+ENV CASSANDRA_VERSION 3.0.12
 
 RUN apt-get update && \
     apt-get install -y cassandra="$CASSANDRA_VERSION" && \
     apt-get install -y vim && \
+    apt-get install -y netcat && \
     rm -rf /var/lib/apt/lists/*
 
 ENV CASSANDRA_CONFIG /etc/cassandra

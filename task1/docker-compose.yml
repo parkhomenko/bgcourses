@@ -1,0 +1,43 @@
+version: '2.1'
+
+
+services:
+
+  node-1:
+    image: cassandra
+    container_name: node-1
+    ports:
+      - "9042:9042"
+    volumes:
+      - ./files:/usr/local/files
+    healthcheck:
+      test: nc -z localhost 9042
+      interval: 3s
+      timeout: 3s
+      retries: 50
+
+  node-2:
+    image: cassandra
+    container_name: node-2
+    links:
+      - node-1
+    command: -seeds node-1
+    healthcheck:
+      test: nc -z localhost 9042
+      interval: 3s
+      timeout: 3s
+      retries: 50
+    depends_on:
+      node-1:
+        condition: service_healthy
+
+  node-3:
+    image: cassandra
+    container_name: node-3
+    links:
+      - node-1
+      - node-2
+    command: -seeds node-2
+    depends_on:
+      node-2:
+        condition: service_healthy
