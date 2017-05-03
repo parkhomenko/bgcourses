@@ -1,10 +1,10 @@
 # Starting a cluster
 
-Start:
-docker build -t hdfs ./docker
+Start:<br/>
+docker build -t yarn ./docker<br/>
 docker-compose up -d
 
-Stop:
+Stop:<br/>
 docker-compose down --volumes
 
 # Map-reduce job
