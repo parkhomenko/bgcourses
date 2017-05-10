@@ -1,0 +1,11 @@
+{
+  "type": "record",
+  "name": "Movie",
+  "namespace": "com.bgcourse.domain",
+  "doc": "Movie in the IMDB database",
+  "fields": [
+    {"name": "title", "type": "string"},
+    {"name": "rating", "type": "float"},
+    {"name": "votes", "type": "int"}
+  ]
+}
