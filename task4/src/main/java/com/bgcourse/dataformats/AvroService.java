@@ -16,9 +16,9 @@ import org.apache.avro.specific.SpecificDatumWriter;
 
 import com.bgcourse.domain.Movie;
 
-public class MovieAvroHdfsService {
+public class AvroService {
 
-  public void writeToHdfs(Movie movie, OutputStream outputStream) throws IOException {
+  public void write(Movie movie, OutputStream outputStream) throws IOException {
     DatumWriter<Movie> writer = new SpecificDatumWriter<>(Movie.class);
     Encoder encoder = EncoderFactory.get().binaryEncoder(outputStream, null);
     writer.write(movie, encoder);
@@ -26,7 +26,7 @@ public class MovieAvroHdfsService {
     outputStream.close();
   }
 
-  public Movie readFromHdfs(InputStream inputStream) throws IOException {
+  public Movie read(InputStream inputStream) throws IOException {
     DatumReader<Movie> reader = new SpecificDatumReader<>(Movie.class);
     Decoder decoder = DecoderFactory.get().binaryDecoder(inputStream, null);
     return reader.read(null, decoder);
